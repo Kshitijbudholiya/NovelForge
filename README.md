@@ -22,7 +22,7 @@ dark literary desktop UI built with DearPyGui.
 |---|---|
 | [DearPyGui](https://github.com/hoffstadt/DearPyGui) ≥ 2.0 | Desktop GUI |
 | [Ollama](https://ollama.ai) | Local LLM inference |
-| [Endee](https://endee.io) | Vector database |
+| [Endee](https://github.com/endee-io/endee) | Vector database |
 
 Ollama must be running locally with the **qwen3:8b** and **nomic-embed-text** models pulled:
 
