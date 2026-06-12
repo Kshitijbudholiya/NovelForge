@@ -53,7 +53,7 @@ launch()
 ## Project Layout
 
 ```
-storyforge-ai/
+StoryForge/
 ├── storyforge/
 │   ├── __init__.py          # public API + launch()
 │   ├── __main__.py          # python -m storyforge
@@ -84,4 +84,4 @@ storyforge-ai/
 
 MIT Licence.
 
-Check out Licence Page for More Details.
+Check out LICENCE page to learn more.
