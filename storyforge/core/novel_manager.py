@@ -26,16 +26,16 @@ class NovelManager:
     def create_novel(self, title: str, genre: str, premise: str) -> str:
         novel_id = str(uuid.uuid4())
         metadata = {
-            "novel_id": novel_id,
-            "title": title,
-            "genre": genre,
-            "premise": premise,
+            "novel_id":       novel_id,
+            "title":          title,
+            "genre":          genre,
+            "premise":        premise,
             "current_chapter": 1,
-            "characters": [],
-            "locations": [],
-            "factions": [],
-            "lore_topics": [],
-            "created": True,
+            "characters":     [],
+            "locations":      [],
+            "factions":       [],
+            "lore_topics":    [],
+            "created":        True,
         }
         self._novel_dir(novel_id).mkdir(parents=True, exist_ok=True)
         self.save_metadata(novel_id, metadata)
@@ -122,20 +122,10 @@ class NovelManager:
 
         section = None
         location_headers = {"locations", "location"}
-        faction_headers = {
-            "factions",
-            "faction",
-            "political systems",
-            "political system",
-        }
-        lore_headers = {
-            "magic systems",
-            "magic system",
-            "technology",
-            "history",
-            "world rules",
-            "lore",
-            "other",
+        faction_headers  = {"factions", "faction", "political systems", "political system"}
+        lore_headers     = {
+            "magic systems", "magic system", "technology", "history",
+            "world rules", "lore", "other",
         }
 
         for line in lore_text.splitlines():
@@ -143,11 +133,9 @@ class NovelManager:
             if not stripped:
                 continue
 
-            header_text = stripped.lstrip("#- ").rstrip(":").lower()
-
-            if stripped.startswith("#") or (
-                stripped.startswith("-") and len(stripped) < 40 and ":" not in stripped
-            ):
+            # Section header: lines starting with #
+            if stripped.startswith("#"):
+                header_text = stripped.lstrip("# ").rstrip(":").lower()
                 if header_text in location_headers:
                     section = "location"
                 elif header_text in faction_headers:
@@ -158,6 +146,7 @@ class NovelManager:
                     section = None
                 continue
 
+            # Bullet item under active section
             if stripped.startswith(("-", "*")):
                 item = stripped.lstrip("-* ").split(":")[0].strip()
                 if not item:
@@ -179,9 +168,9 @@ class NovelManager:
                 out.append(
                     {
                         "novel_id": data.get("novel_id"),
-                        "title": data.get("title"),
-                        "genre": data.get("genre"),
-                        "chapter": data.get("current_chapter", 1),
+                        "title":    data.get("title"),
+                        "genre":    data.get("genre"),
+                        "chapter":  data.get("current_chapter", 1),
                     }
                 )
             except Exception:

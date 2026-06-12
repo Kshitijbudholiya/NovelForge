@@ -15,8 +15,8 @@ from storyforge.core.memory import (
 )
 from storyforge.core.generators import generate_story_package, answer_story_question
 
-# ── context builder ───────────────────────────────────────────────────────────
 
+# ── context builder ───────────────────────────────────────────────────────────
 
 def build_context(novel_id: str, query: str, story_bible: str = "") -> str:
     memory = retrieve_all_memory(novel_id, query)
@@ -32,7 +32,6 @@ def build_context(novel_id: str, query: str, story_bible: str = "") -> str:
 
 
 # ── chapter generation ────────────────────────────────────────────────────────
-
 
 def generate_next_chapter(
     novel_id: str,
@@ -53,7 +52,6 @@ def generate_next_chapter(
 
 # ── question answering ────────────────────────────────────────────────────────
 
-
 def ask_story_question(
     novel_id: str,
     question: str,
@@ -64,7 +62,6 @@ def ask_story_question(
 
 
 # ── first chapter save ────────────────────────────────────────────────────────
-
 
 def save_first_chapter(
     novel_id: str,
@@ -80,7 +77,6 @@ def save_first_chapter(
 
 
 # ── context retrieval (for external use) ─────────────────────────────────────
-
 
 def retrieve_story_context(
     novel_id: str,

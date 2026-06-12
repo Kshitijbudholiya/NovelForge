@@ -53,28 +53,24 @@ launch()
 ## Project Layout
 
 ```
-StoryForge/
+storyforge/
 ├── storyforge/
 │   ├── __init__.py          # public API + launch()
 │   ├── __main__.py          # python -m storyforge
 │   ├── core/
-│   │   ├── __init__.py
 │   │   ├── prompts.py       # all LLM prompt templates
 │   │   ├── generators.py    # LLM calls (create, continue, compress, extract)
 │   │   ├── memory.py        # Endee vector DB layer
 │   │   ├── novel_manager.py # disk persistence + metadata
 │   │   └── rag.py           # RAG orchestration
 │   └── ui/
-│       ├── __init__.py
+│       ├── actions.py       # send_message, on_toggle, worker thread
 │       ├── app.py           # DearPyGui window + main loop
 │       ├── theme.py         # colour palette + theme builders
 │       ├── sidebar.py       # novel/chapter tree
+│       ├── state.py         # shared mutable state (no circular imports)
 │       ├── chat.py          # message rendering + input
 │       └── modals.py        # New Novel modal
-├── tests/
-│   ├── __init__.py
-│   ├── test_generators.py
-│   └── test_novel_manager.py
 ├── pyproject.toml
 ├── README.md
 └── LICENSE
@@ -82,6 +78,6 @@ StoryForge/
 
 ## License
 
-MIT Licence.
+MIT License.
 
-Check out LICENCE page to learn more.
+Read the LICENCE page to know more.

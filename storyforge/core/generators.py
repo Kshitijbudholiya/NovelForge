@@ -26,7 +26,6 @@ STORY_MODEL = "qwen3:8b"
 
 # ── low-level LLM wrapper ─────────────────────────────────────────────────────
 
-
 def llm(
     prompt: str,
     system: str = NOVEL_SYSTEM_PROMPT,
@@ -36,7 +35,7 @@ def llm(
         model=STORY_MODEL,
         messages=[
             {"role": "system", "content": system},
-            {"role": "user", "content": prompt},
+            {"role": "user",   "content": prompt},
         ],
         options={"temperature": temperature},
     )
@@ -45,18 +44,13 @@ def llm(
 
 # ── intent classification ─────────────────────────────────────────────────────
 
-
 def classify_intent(user_input: str) -> str:
     """Return 'NEW_NOVEL', 'QUESTION', or 'CONTINUE'."""
     text = user_input.lower().strip()
 
     new_keywords = [
-        "new novel",
-        "new story",
-        "write a novel",
-        "create a novel",
-        "start a novel",
-        "novel idea",
+        "new novel", "new story", "write a novel",
+        "create a novel", "start a novel", "novel idea",
     ]
     question_keywords = ["who", "what", "when", "where", "why", "how"]
 
@@ -71,7 +65,6 @@ def classify_intent(user_input: str) -> str:
 
 # ── generation helpers ────────────────────────────────────────────────────────
 
-
 def create_first_chapter(idea: str) -> str:
     return llm(CREATE_NOVEL_PROMPT.format(idea=idea))
 
@@ -85,7 +78,9 @@ def create_chapter_plan(memory: str, instruction: str) -> str:
 
 def generate_chapter(memory: str, plan: str, instruction: str) -> str:
     return llm(
-        CONTINUE_NOVEL_PROMPT.format(memory=memory, plan=plan, instruction=instruction)
+        CONTINUE_NOVEL_PROMPT.format(
+            memory=memory, plan=plan, instruction=instruction
+        )
     )
 
 
@@ -123,19 +118,18 @@ def answer_story_question(context: str, question: str) -> str:
 
 # ── high-level package ────────────────────────────────────────────────────────
 
-
 def generate_story_package(memory: str, instruction: str) -> dict:
     """Run the full chapter-generation pipeline and return a results dict."""
-    plan = create_chapter_plan(memory, instruction)
-    chapter = generate_chapter(memory, plan, instruction)
-    summary = compress_memory(chapter)
+    plan      = create_chapter_plan(memory, instruction)
+    chapter   = generate_chapter(memory, plan, instruction)
+    summary   = compress_memory(chapter)
     characters = extract_characters(chapter)
-    lore = extract_lore(chapter)
+    lore      = extract_lore(chapter)
 
     return {
-        "plan": plan,
-        "chapter": chapter,
-        "summary": summary,
+        "plan":       plan,
+        "chapter":    chapter,
+        "summary":    summary,
         "characters": characters,
-        "lore": lore,
+        "lore":       lore,
     }
