@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from storyforge.core.memory import (
+from novelforge.core.memory import (
     retrieve_all_memory,
     save_story,
     save_summary,
     save_characters,
     save_lore,
 )
-from storyforge.core.generators import generate_story_package, answer_story_question
+from novelforge.core.generators import generate_story_package, answer_story_question
 
 
 def build_context(novel_id: str, query: str, story_bible: str = "") -> str:

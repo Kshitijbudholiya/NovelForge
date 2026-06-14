@@ -1,8 +1,8 @@
-# StoryForge AI
+# NovelForge AI
 
-> ⚠️ **Work in Progress** — StoryForge is actively under development. Features may change, break, or be incomplete. Not production-ready.
+> ⚠️ **Work in Progress** — NovelForge is actively under development. Features may change, break, or be incomplete. Not production-ready.
 
-**StoryForge** is an AI-powered desktop novel writer that runs entirely on your local machine. Give it a title, genre, and premise — it writes Chapter 1, remembers everything, and keeps writing with full narrative continuity across as many chapters as you want. Ask it questions about your story and it searches its vector memory to answer accurately.
+**NovelForge** is an AI-powered desktop novel writer that runs entirely on your local machine. Give it a title, genre, and premise — it writes Chapter 1, remembers everything, and keeps writing with full narrative continuity across as many chapters as you want. Ask it questions about your story and it searches its vector memory to answer accurately.
 
 Built on three local services: **Ollama** for LLM inference, **Endee** for vector memory, and **PyQt6** for the desktop UI.
 
@@ -10,17 +10,17 @@ Built on three local services: **Ollama** for LLM inference, **Endee** for vecto
 
 ## What Makes This Different
 
-Most AI writing tools forget everything after each message. StoryForge doesn't. Every chapter you generate is broken into chunks, embedded, and stored across four dedicated Endee vector indexes — story, characters, lore, and summaries. When the next chapter is generated, the RAG layer retrieves the most semantically relevant chunks from all four indexes and feeds them into the prompt. Characters stay consistent. Locations don't move. Plot threads don't get dropped.
+Most AI writing tools forget everything after each message. NovelForge doesn't. Every chapter you generate is broken into chunks, embedded, and stored across four dedicated Endee vector indexes — story, characters, lore, and summaries. When the next chapter is generated, the RAG layer retrieves the most semantically relevant chunks from all four indexes and feeds them into the prompt. Characters stay consistent. Locations don't move. Plot threads don't get dropped.
 
 ---
 
 ## Powered by Endee
 
-[Endee](https://endee.io) is the vector database that makes StoryForge's memory work. It runs locally via Docker, stores all embeddings on disk, and serves queries over HTTP — no cloud, no API keys, no data leaving your machine.
+[Endee](https://endee.io) is the vector database that makes NovelForge's memory work. It runs locally via Docker, stores all embeddings on disk, and serves queries over HTTP — no cloud, no API keys, no data leaving your machine.
 
 **Why Endee for this project:**
 
-- **Multi-index architecture** — StoryForge uses four separate indexes (`story_memory`, `character_memory`, `lore_memory`, `summary_memory`). Endee makes it trivial to create, manage, and query multiple indexes independently, so character recall and lore recall don't interfere with each other.
+- **Multi-index architecture** — NovelForge uses four separate indexes (`story_memory`, `character_memory`, `lore_memory`, `summary_memory`). Endee makes it trivial to create, manage, and query multiple indexes independently, so character recall and lore recall don't interfere with each other.
 - **Filtered queries** — Every vector is tagged with a `novel_id` filter. Endee's `$eq` filter operator means queries are always scoped to the active novel — no cross-contamination between your different stories.
 - **INT8 precision** — All indexes use `Precision.INT8` quantization. This halves the memory footprint of stored vectors with negligible quality loss, which matters when you're embedding hundreds of chunks across long novels.
 - **Cosine similarity** — The embedding model (`nomic-embed-text`) and cosine space type are a natural fit; semantic similarity is what you want when searching story memory by meaning, not distance.
@@ -47,7 +47,7 @@ Most AI writing tools forget everything after each message. StoryForge doesn't. 
 
 ## Minimum Requirements
 
-StoryForge runs heavy local inference. These are the **minimum tested specs**:
+NovelForge runs heavy local inference. These are the **minimum tested specs**:
 
 | Component | Minimum |
 |---|---|
@@ -63,7 +63,7 @@ StoryForge runs heavy local inference. These are the **minimum tested specs**:
 
 ## Prerequisites
 
-You need **Ollama** and **Endee** running locally before launching StoryForge.
+You need **Ollama** and **Endee** running locally before launching NovelForge.
 
 ### 1. Start Ollama
 
@@ -124,7 +124,7 @@ Full Endee documentation: https://docs.endee.io/quick-start
 Once Ollama and Endee are both running:
 
 ```bash
-pip install storyforge
+pip install novelforge
 ```
 
 ---
@@ -132,13 +132,13 @@ pip install storyforge
 ## Launch
 
 ```bash
-storyforge
+novelforge
 ```
 
 Or from Python:
 
 ```python
-from storyforge import launch
+from novelforge import launch
 launch()
 ```
 
@@ -160,14 +160,14 @@ launch()
 ## Project Layout
 
 ```
-storyforge/
+novelforge/
 ├── pyproject.toml
 ├── README.md
 ├── LICENSE
 │
-├── storyforge/
+├── novelforge/
 │   ├── __init__.py              # public API — exposes launch()
-│   ├── __main__.py              # python -m storyforge entry point
+│   ├── __main__.py              # python -m novelforge entry point
 │   │
 │   ├── core/                    # backend — no UI dependency
 │   │   ├── __init__.py

@@ -11,7 +11,7 @@ from PyQt6.QtWidgets import (
     QSizePolicy,
 )
 
-from storyforge.ui.style import (
+from novelforge.ui.style import (
     C_AMBER,
     C_PANEL3,
     C_TEXT_DIM,
@@ -216,7 +216,7 @@ class MessageBubble(QWidget):
         label_row = QHBoxLayout()
         label_row.setSpacing(6)
 
-        name = QLabel("You" if is_user else "StoryForge")
+        name = QLabel("You" if is_user else "NovelForge")
         name.setObjectName("msg_label_user" if is_user else "msg_label_ai")
 
         ts_label = QLabel(timestamp)
@@ -288,7 +288,7 @@ class EmptyState(QWidget):
                 "or ask a question about it."
             )
         else:
-            title = QLabel("Welcome to StoryForge")
+            title = QLabel("Welcome to NovelForge")
             sub = QLabel(
                 "Create a new novel with the button above,\n"
                 "or select one from the sidebar."

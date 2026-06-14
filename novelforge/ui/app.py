@@ -1,5 +1,5 @@
 """
-storyforge.ui.app
+novelforge.ui.app
 ~~~~~~~~~~~~~~~~~
 MainWindow — assembles topbar, sidebar, chat panel, loader overlay,
 and connects all signals to backend workers.
@@ -27,12 +27,12 @@ from PyQt6.QtWidgets import (
     QStatusBar,
 )
 
-from storyforge.ui.style import STYLESHEET, C_AMBER, C_TEXT_DIM, C_BG
-from storyforge.ui.widgets import ToggleSwitch, LoaderOverlay
-from storyforge.ui.sidebar import Sidebar
-from storyforge.ui.chat_panel import ChatPanel
-from storyforge.ui.dialogs import NewNovelDialog
-from storyforge.ui.workers import CreateNovelWorker, SendMessageWorker
+from novelforge.ui.style import STYLESHEET, C_AMBER, C_TEXT_DIM, C_BG
+from novelforge.ui.widgets import ToggleSwitch, LoaderOverlay
+from novelforge.ui.sidebar import Sidebar
+from novelforge.ui.chat_panel import ChatPanel
+from novelforge.ui.dialogs import NewNovelDialog
+from novelforge.ui.workers import CreateNovelWorker, SendMessageWorker
 
 NOVELS_DIR = Path("novels")
 
@@ -42,7 +42,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         try:
-            from storyforge.core.novel_manager import NovelManager
+            from novelforge.core.novel_manager import NovelManager
 
             self._manager = NovelManager()
             self._has_backend = True
@@ -59,7 +59,7 @@ class MainWindow(QMainWindow):
 
         self._histories: dict[str, list[dict]] = {}
 
-        self.setWindowTitle("StoryForge — AI Novel Writer")
+        self.setWindowTitle("NovelForge — AI Novel Writer")
         self.setMinimumSize(1100, 700)
         self.resize(1280, 800)
         self.setStyleSheet(STYLESHEET)
@@ -118,7 +118,7 @@ class MainWindow(QMainWindow):
 
         logo = QLabel("✦")
         logo.setObjectName("app_logo")
-        title = QLabel("StoryForge")
+        title = QLabel("NovelForge")
         title.setObjectName("app_title")
         h.addWidget(logo)
         h.addSpacing(2)
@@ -439,8 +439,8 @@ def run() -> None:
     if not isinstance(app, QApplication):
         app = QApplication(sys.argv)
 
-    app.setApplicationName("StoryForge")
-    app.setOrganizationName("StoryForge")
+    app.setApplicationName("NovelForge")
+    app.setOrganizationName("NovelForge")
     app.setStyleSheet(STYLESHEET)
 
     win = MainWindow()

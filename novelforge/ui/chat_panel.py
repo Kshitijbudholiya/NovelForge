@@ -16,7 +16,7 @@ from PyQt6.QtWidgets import (
     QProgressBar,
 )
 
-from storyforge.ui.widgets import MessageBubble, EmptyState
+from novelforge.ui.widgets import MessageBubble, EmptyState
 
 
 class ChatPanel(QWidget):
@@ -123,7 +123,7 @@ class ChatPanel(QWidget):
         self._hdr_icon = QLabel("✦")
         self._hdr_icon.setObjectName("hdr_icon")
 
-        self._hdr_novel = QLabel("StoryForge")
+        self._hdr_novel = QLabel("NovelForge")
         self._hdr_novel.setObjectName("hdr_novel")
 
         self._hdr_chevron = QLabel("›")
@@ -147,7 +147,7 @@ class ChatPanel(QWidget):
         return bar
 
     def _update_header(self, novel_title: str, chapter: int | None) -> None:
-        self._hdr_novel.setText(novel_title or "StoryForge")
+        self._hdr_novel.setText(novel_title or "NovelForge")
         if chapter is not None:
             self._hdr_chevron.show()
             self._hdr_chapter.setText(f"Chapter {chapter}")

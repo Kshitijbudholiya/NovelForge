@@ -4,7 +4,7 @@ import json
 
 import ollama
 
-from storyforge.core.prompts import (
+from novelforge.core.prompts import (
     NOVEL_SYSTEM_PROMPT,
     CREATE_NOVEL_PROMPT,
     CHAPTER_PLAN_PROMPT,

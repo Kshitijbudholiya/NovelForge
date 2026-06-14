@@ -1,5 +1,5 @@
 """
-storyforge.ui.workers
+novelforge.ui.workers
 ~~~~~~~~~~~~~~~~~~~~~
 QThread worker classes for all blocking AI operations.
 Each emits typed signals so the UI can react without polling.
@@ -26,13 +26,13 @@ class CreateNovelWorker(QThread):
 
     def run(self) -> None:
         try:
-            from storyforge.core.generators import (
+            from novelforge.core.generators import (
                 create_first_chapter,
                 compress_memory,
                 extract_characters,
                 extract_lore,
             )
-            from storyforge.core.rag import save_first_chapter
+            from novelforge.core.rag import save_first_chapter
 
             self.progress.emit("Creating novel record…")
             nid = self.manager.create_novel(self.title, self.genre, self.premise)
@@ -98,8 +98,8 @@ class SendMessageWorker(QThread):
 
     def run(self) -> None:
         try:
-            from storyforge.core.generators import classify_intent
-            from storyforge.core.rag import (
+            from novelforge.core.generators import classify_intent
+            from novelforge.core.rag import (
                 generate_next_chapter,
                 ask_story_question,
             )

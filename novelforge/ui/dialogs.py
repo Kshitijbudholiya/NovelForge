@@ -1,5 +1,5 @@
 """
-storyforge.ui.dialogs
+novelforge.ui.dialogs
 ~~~~~~~~~~~~~~~~~~~~~
 Modal dialog windows — New Novel creation form.
 """
@@ -20,7 +20,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtGui import QKeySequence, QShortcut
 
-from storyforge.ui.style import C_AMBER, C_TEXT_DIM
+from novelforge.ui.style import C_AMBER, C_TEXT_DIM
 
 
 class NewNovelDialog(QDialog):
