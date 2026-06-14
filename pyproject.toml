@@ -9,7 +9,7 @@ description = "AI-powered novel writer with vector memory, RAG, and a PyQt6 desk
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10"
-authors = [{ name = "Kshitij Budholiya" }]
+authors = [{ name = "Kshitij Budholiya", email = "kshitijbudholiya2006@gmail.com" }]
 keywords = ["novel", "ai", "writing", "ollama", "pyqt6", "rag", "vector-database"]
 classifiers = [
     "Development Status :: 3 - Alpha",
