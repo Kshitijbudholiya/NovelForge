@@ -4,24 +4,35 @@ storyforge.ui.app
 MainWindow — assembles topbar, sidebar, chat panel, loader overlay,
 and connects all signals to backend workers.
 """
+
 from __future__ import annotations
 
 import json
 from datetime import datetime
 from pathlib import Path
 
-from PyQt6.QtCore    import Qt, QTimer, QSize
-from PyQt6.QtGui     import QFont, QFontDatabase, QIcon, QKeySequence, QShortcut
-from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
-                              QHBoxLayout, QLabel, QPushButton, QFrame,
-                              QSplitter, QSizePolicy, QStatusBar)
+from PyQt6.QtCore import Qt, QTimer, QSize
+from PyQt6.QtGui import QFont, QFontDatabase, QIcon, QKeySequence, QShortcut
+from PyQt6.QtWidgets import (
+    QApplication,
+    QMainWindow,
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QFrame,
+    QSplitter,
+    QSizePolicy,
+    QStatusBar,
+)
 
-from storyforge.ui.style      import STYLESHEET, C_AMBER, C_TEXT_DIM, C_SUCCESS, C_ERROR, C_BG
-from storyforge.ui.widgets    import ToggleSwitch, LoaderOverlay
-from storyforge.ui.sidebar    import Sidebar
+from storyforge.ui.style import STYLESHEET, C_AMBER, C_TEXT_DIM, C_BG
+from storyforge.ui.widgets import ToggleSwitch, LoaderOverlay
+from storyforge.ui.sidebar import Sidebar
 from storyforge.ui.chat_panel import ChatPanel
-from storyforge.ui.dialogs    import NewNovelDialog
-from storyforge.ui.workers    import CreateNovelWorker, SendMessageWorker
+from storyforge.ui.dialogs import NewNovelDialog
+from storyforge.ui.workers import CreateNovelWorker, SendMessageWorker
 
 NOVELS_DIR = Path("novels")
 
@@ -30,44 +41,37 @@ class MainWindow(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
 
-        # ── backend ───────────────────────────────────────────────────────────
         try:
             from storyforge.core.novel_manager import NovelManager
+
             self._manager = NovelManager()
             self._has_backend = True
         except ImportError:
             self._manager = None
             self._has_backend = False
 
-        # ── app state ─────────────────────────────────────────────────────────
-        self._active_novel:   str | None = None
-        self._active_scope:   str        = "novel"   # "novel" | "chapter"
+        self._active_novel: str | None = None
+        self._active_scope: str = "novel"
         self._active_chapter: int | None = None
-        self._interactive:    bool       = True
-        self._busy:           bool       = False
-        self._worker = None   # holds current QThread to prevent GC
+        self._interactive: bool = True
+        self._busy: bool = False
+        self._worker = None
 
-        # per-context chat history: key -> list[{role,text,time}]
-        # key = novel_id  OR  f"{novel_id}_ch{n}"
         self._histories: dict[str, list[dict]] = {}
 
-        # ── window setup ──────────────────────────────────────────────────────
         self.setWindowTitle("StoryForge — AI Novel Writer")
         self.setMinimumSize(1100, 700)
         self.resize(1280, 800)
         self.setStyleSheet(STYLESHEET)
 
-        # ── central layout ────────────────────────────────────────────────────
         central = QWidget()
         self.setCentralWidget(central)
         main_vbox = QVBoxLayout(central)
         main_vbox.setContentsMargins(0, 0, 0, 0)
         main_vbox.setSpacing(0)
 
-        # topbar
         main_vbox.addWidget(self._build_topbar())
 
-        # body row (sidebar + chat)
         body = QWidget()
         body_h = QHBoxLayout(body)
         body_h.setContentsMargins(0, 0, 0, 0)
@@ -84,33 +88,25 @@ class MainWindow(QMainWindow):
 
         main_vbox.addWidget(body, 1)
 
-        # status bar
         main_vbox.addWidget(self._build_statusbar())
 
-        # ── loader overlay (parented to central so it covers everything) ──────
         self._loader = LoaderOverlay(central)
         self._loader.resize(central.size())
 
-        # resize overlay when window resizes
         central.installEventFilter(self)
 
-        # ── initial data load ─────────────────────────────────────────────────
         self._sidebar.refresh()
-        self._chat.set_interactive(False)   # nothing selected yet
+        self._chat.set_interactive(False)
 
-        # keyboard shortcut: Ctrl+N = new novel
         sc = QShortcut(QKeySequence("Ctrl+N"), self)
         sc.activated.connect(self._open_new_novel_dialog)
 
-    # ── event filter (resize overlay) ─────────────────────────────────────────
-
     def eventFilter(self, obj, event) -> bool:
         from PyQt6.QtCore import QEvent
+
         if event.type() == QEvent.Type.Resize:
             self._loader.resize(obj.size())
         return super().eventFilter(obj, event)
-
-    # ── top bar ───────────────────────────────────────────────────────────────
 
     def _build_topbar(self) -> QWidget:
         bar = QFrame()
@@ -120,7 +116,6 @@ class MainWindow(QMainWindow):
         h.setContentsMargins(14, 0, 14, 0)
         h.setSpacing(10)
 
-        # logo + title
         logo = QLabel("✦")
         logo.setObjectName("app_logo")
         title = QLabel("StoryForge")
@@ -130,7 +125,6 @@ class MainWindow(QMainWindow):
         h.addWidget(title)
         h.addStretch()
 
-        # New Novel button
         self._new_btn = QPushButton("＋  New Novel")
         self._new_btn.setObjectName("btn_primary")
         self._new_btn.setFixedHeight(34)
@@ -141,14 +135,12 @@ class MainWindow(QMainWindow):
 
         h.addSpacing(20)
 
-        # Interactive toggle
         toggle_row = QHBoxLayout()
         toggle_row.setSpacing(8)
         toggle_row.setContentsMargins(0, 0, 0, 0)
 
         self._toggle_label = QLabel("Interactive")
-        self._toggle_label.setObjectName("toggle_label")
-        self._toggle_label.setStyleSheet(f"color: {C_SUCCESS}; font-size: 12px; font-weight: 600;")
+        self._toggle_label.setObjectName("toggle_label_on")
 
         self._toggle = ToggleSwitch(checked=True)
         self._toggle.toggled.connect(self._on_toggle)
@@ -164,8 +156,6 @@ class MainWindow(QMainWindow):
 
         return bar
 
-    # ── status bar ────────────────────────────────────────────────────────────
-
     def _build_statusbar(self) -> QWidget:
         bar = QFrame()
         bar.setObjectName("statusbar")
@@ -180,27 +170,28 @@ class MainWindow(QMainWindow):
         h.addStretch()
 
         self._backend_lbl = QLabel(
-            "Backend ready" if self._has_backend else "Demo mode — backend not available"
+            "Backend ready"
+            if self._has_backend
+            else "Demo mode — backend not available"
         )
         self._backend_lbl.setObjectName("status_text")
         h.addWidget(self._backend_lbl)
 
         return bar
 
-    # ── toggle ────────────────────────────────────────────────────────────────
-
     def _on_toggle(self, checked: bool) -> None:
         self._interactive = checked
         if checked:
             self._toggle_label.setText("Interactive")
-            self._toggle_label.setStyleSheet(f"color: {C_SUCCESS}; font-size: 12px; font-weight: 600;")
+            self._toggle_label.setObjectName("toggle_label_on")
         else:
             self._toggle_label.setText("Read-only")
-            self._toggle_label.setStyleSheet(f"color: {C_ERROR}; font-size: 12px; font-weight: 600;")
-
+            self._toggle_label.setObjectName("toggle_label_off")
+        style = self._toggle_label.style()
+        if style is not None:
+            style.unpolish(self._toggle_label)
+            style.polish(self._toggle_label)
         self._chat.set_interactive(checked and self._active_novel is not None)
-
-    # ── new novel dialog ──────────────────────────────────────────────────────
 
     def _open_new_novel_dialog(self) -> None:
         if self._busy:
@@ -209,8 +200,8 @@ class MainWindow(QMainWindow):
         if dlg.exec() != NewNovelDialog.DialogCode.Accepted:
             return
 
-        title   = dlg.title
-        genre   = dlg.genre
+        title = dlg.title
+        genre = dlg.genre
         premise = dlg.premise
 
         if not self._has_backend or self._manager is None:
@@ -235,12 +226,11 @@ class MainWindow(QMainWindow):
         self._set_busy(False)
         self._sidebar.refresh()
 
-        nid      = result["novel_id"]
-        chapter  = result["chapter"]
-        summary  = result["summary"]
+        nid = result["novel_id"]
+        chapter = result["chapter"]
+        summary = result["summary"]
 
-        # seed chapter 1 history
-        ts  = datetime.now().strftime("%H:%M")
+        ts = datetime.now().strftime("%H:%M")
         key = f"{nid}_ch1"
         self._histories[key] = [
             {"role": "assistant", "text": chapter, "time": ts},
@@ -249,8 +239,6 @@ class MainWindow(QMainWindow):
 
         self._switch_context(nid, chapter_num=1)
         self._set_status("Chapter 1 ready.")
-
-    # ── novel / chapter selection ─────────────────────────────────────────────
 
     def _on_novel_selected(self, nid: str) -> None:
         if self._manager and self._has_backend:
@@ -269,16 +257,14 @@ class MainWindow(QMainWindow):
         self._switch_context(nid, chapter_num=cnum)
 
     def _switch_context(self, nid: str, chapter_num: int | None) -> None:
-        self._active_novel   = nid
+        self._active_novel = nid
         self._active_chapter = chapter_num
-        self._active_scope   = "chapter" if chapter_num is not None else "novel"
+        self._active_scope = "chapter" if chapter_num is not None else "novel"
 
-        # get or load history
         key = self._history_key(nid, chapter_num)
         if key not in self._histories:
             self._histories[key] = self._load_history_from_disk(nid, chapter_num)
 
-        # load novel metadata for title
         title = self._get_novel_title(nid)
 
         self._chat.set_context(
@@ -288,8 +274,6 @@ class MainWindow(QMainWindow):
         )
         self._chat.set_interactive(self._interactive)
         self._sidebar.set_active(nid, chapter_num)
-
-    # ── send message ──────────────────────────────────────────────────────────
 
     def _on_message_sent(self, text: str) -> None:
         if self._busy:
@@ -330,7 +314,6 @@ class MainWindow(QMainWindow):
         self._chat.set_busy(False)
         self._set_busy(False)
         self._chat.add_message("assistant", text)
-        # persist in history
         key = self._history_key(self._active_novel, self._active_chapter)
         self._histories.setdefault(key, [])
         self._set_status("Done.")
@@ -339,15 +322,14 @@ class MainWindow(QMainWindow):
         self._chat.set_busy(False)
         self._set_busy(False)
 
-        ch_num  = pkg.get("chapter_number", self._active_chapter)
+        ch_num = pkg.get("chapter_number", self._active_chapter)
         chapter = pkg["chapter"]
         summary = pkg["summary"]
 
         self._chat.add_message("assistant", chapter)
         self._chat.add_message("assistant", "─── Summary ───\n" + summary)
 
-        # seed history for the new chapter context
-        ts  = datetime.now().strftime("%H:%M")
+        ts = datetime.now().strftime("%H:%M")
         key = self._history_key(self._active_novel, ch_num)
         self._histories[key] = [
             {"role": "assistant", "text": chapter, "time": ts},
@@ -357,10 +339,8 @@ class MainWindow(QMainWindow):
         self._sidebar.refresh()
         self._sidebar.set_active(self._active_novel, ch_num)
         self._active_chapter = ch_num
-        self._active_scope   = "chapter"
+        self._active_scope = "chapter"
         self._set_status(f"Chapter {ch_num} generated.")
-
-    # ── worker error ──────────────────────────────────────────────────────────
 
     def _on_worker_error(self, msg: str) -> None:
         self._loader.hide_loading()
@@ -374,8 +354,6 @@ class MainWindow(QMainWindow):
             self._worker.quit()
             self._worker.wait(2000)
             self._worker = None
-
-    # ── helpers ───────────────────────────────────────────────────────────────
 
     def _set_busy(self, busy: bool, msg: str = "") -> None:
         self._busy = busy
@@ -400,9 +378,7 @@ class MainWindow(QMainWindow):
         except Exception:
             return "Novel"
 
-    def _load_history_from_disk(
-        self, nid: str, chapter: int | None
-    ) -> list[dict]:
+    def _load_history_from_disk(self, nid: str, chapter: int | None) -> list[dict]:
         """Pre-load a chapter's saved text into chat history on first open."""
         if chapter is None:
             return []
@@ -411,30 +387,44 @@ class MainWindow(QMainWindow):
         sm_path = d / f"summary_{chapter:03d}.txt"
         msgs: list[dict] = []
         if ch_path.exists():
-            msgs.append({
-                "role": "assistant",
-                "text": ch_path.read_text("utf-8"),
-                "time": "saved",
-            })
+            msgs.append(
+                {
+                    "role": "assistant",
+                    "text": ch_path.read_text("utf-8"),
+                    "time": "saved",
+                }
+            )
         if sm_path.exists():
-            msgs.append({
-                "role": "assistant",
-                "text": "─── Summary ───\n" + sm_path.read_text("utf-8"),
-                "time": "saved",
-            })
+            msgs.append(
+                {
+                    "role": "assistant",
+                    "text": "─── Summary ───\n" + sm_path.read_text("utf-8"),
+                    "time": "saved",
+                }
+            )
         return msgs
 
     def _demo_create(self, title: str, genre: str, premise: str) -> None:
         import uuid
+
         nid = str(uuid.uuid4())
         NOVELS_DIR.mkdir(exist_ok=True)
         (NOVELS_DIR / f"{nid}.json").write_text(
-            json.dumps({
-                "novel_id": nid, "title": title, "genre": genre,
-                "premise": premise, "current_chapter": 1,
-                "characters": [], "locations": [], "factions": [],
-                "lore_topics": [], "created": True,
-            }, indent=4),
+            json.dumps(
+                {
+                    "novel_id": nid,
+                    "title": title,
+                    "genre": genre,
+                    "premise": premise,
+                    "current_chapter": 1,
+                    "characters": [],
+                    "locations": [],
+                    "factions": [],
+                    "lore_topics": [],
+                    "created": True,
+                },
+                indent=4,
+            ),
             encoding="utf-8",
         )
         self._sidebar.refresh()
@@ -442,11 +432,13 @@ class MainWindow(QMainWindow):
         self._set_status(f"'{title}' created (demo mode).")
 
 
-# ── entry point ───────────────────────────────────────────────────────────────
-
 def run() -> None:
     import sys
+
     app = QApplication.instance() or QApplication(sys.argv)
+    if not isinstance(app, QApplication):
+        app = QApplication(sys.argv)
+
     app.setApplicationName("StoryForge")
     app.setOrganizationName("StoryForge")
     app.setStyleSheet(STYLESHEET)

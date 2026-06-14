@@ -44,13 +44,19 @@ class NovelManager:
         self.metadata = metadata
         return metadata
 
-    def save_metadata(self, novel_id: str, metadata: dict) -> None:
+    def save_metadata(self, novel_id: str | None, metadata: dict) -> None:
+        novel_id = novel_id or self.current_novel
+        if novel_id is None:
+            raise ValueError("novel_id must be provided or current_novel must be set")
         path = NOVELS_DIR / f"{novel_id}.json"
         with open(path, "w", encoding="utf-8") as f:
             json.dump(metadata, f, indent=4, ensure_ascii=False)
 
     def _novel_dir(self, novel_id: str | None = None) -> Path:
-        return NOVELS_DIR / (novel_id or self.current_novel)  # type: ignore[operator]
+        dir_id = novel_id or self.current_novel
+        if dir_id is None:
+            raise ValueError("novel_id must be provided or current_novel must be set")
+        return NOVELS_DIR / dir_id
 
     def save_chapter_to_disk(
         self, chapter_number: int, chapter_text: str, summary_text: str
@@ -74,7 +80,7 @@ class NovelManager:
 
     def update_chapter(self) -> int:
         self.metadata["current_chapter"] += 1
-        self.save_metadata(self.current_novel, self.metadata)  # type: ignore[arg-type]
+        self.save_metadata(self.current_novel, self.metadata)
         return self.metadata["current_chapter"]
 
     def get_current_chapter(self) -> int:
@@ -83,22 +89,22 @@ class NovelManager:
     def add_character(self, name: str) -> None:
         if name and name not in self.metadata["characters"]:
             self.metadata["characters"].append(name)
-            self.save_metadata(self.current_novel, self.metadata)  # type: ignore[arg-type]
+            self.save_metadata(self.current_novel, self.metadata)
 
     def add_location(self, location: str) -> None:
         if location and location not in self.metadata["locations"]:
             self.metadata["locations"].append(location)
-            self.save_metadata(self.current_novel, self.metadata)  # type: ignore[arg-type]
+            self.save_metadata(self.current_novel, self.metadata)
 
     def add_faction(self, faction: str) -> None:
         if faction and faction not in self.metadata["factions"]:
             self.metadata["factions"].append(faction)
-            self.save_metadata(self.current_novel, self.metadata)  # type: ignore[arg-type]
+            self.save_metadata(self.current_novel, self.metadata)
 
     def add_lore_topic(self, topic: str) -> None:
         if topic and topic not in self.metadata["lore_topics"]:
             self.metadata["lore_topics"].append(topic)
-            self.save_metadata(self.current_novel, self.metadata)  # type: ignore[arg-type]
+            self.save_metadata(self.current_novel, self.metadata)
 
     def apply_lore_extraction(self, lore_text: str) -> None:
         if not lore_text:

@@ -3,13 +3,22 @@ storyforge.ui.dialogs
 ~~~~~~~~~~~~~~~~~~~~~
 Modal dialog windows — New Novel creation form.
 """
+
 from __future__ import annotations
 
-from PyQt6.QtCore    import Qt
-from PyQt6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QLabel,
-                              QLineEdit, QTextEdit, QPushButton, QFrame,
-                              QSizePolicy)
-from PyQt6.QtGui     import QKeySequence, QShortcut
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import (
+    QDialog,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QTextEdit,
+    QPushButton,
+    QFrame,
+    QSizePolicy,
+)
+from PyQt6.QtGui import QKeySequence, QShortcut
 
 from storyforge.ui.style import C_AMBER, C_TEXT_DIM
 
@@ -25,13 +34,9 @@ class NewNovelDialog(QDialog):
         self.setWindowTitle("New Novel")
         self.setModal(True)
         self.setFixedSize(520, 400)
-        self.setWindowFlags(
-            Qt.WindowType.Dialog |
-            Qt.WindowType.FramelessWindowHint
-        )
+        self.setWindowFlags(Qt.WindowType.Dialog | Qt.WindowType.FramelessWindowHint)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
 
-        # ── outer card ────────────────────────────────────────────────────────
         card = QFrame(self)
         card.setObjectName("loader_card")
         card.setFixedSize(520, 400)
@@ -40,7 +45,6 @@ class NewNovelDialog(QDialog):
         outer.setContentsMargins(28, 24, 28, 24)
         outer.setSpacing(0)
 
-        # ── header ────────────────────────────────────────────────────────────
         hdr_row = QHBoxLayout()
         title_lbl = QLabel("✦  New Novel")
         title_lbl.setObjectName("dialog_title")
@@ -54,14 +58,12 @@ class NewNovelDialog(QDialog):
         outer.addLayout(hdr_row)
         outer.addSpacing(18)
 
-        # ── fields ────────────────────────────────────────────────────────────
         self._add_field(outer, "Title", "e.g. The Iron Tide")
         self.title_edit = self._last_line
 
         self._add_field(outer, "Genre", "e.g. Fantasy, Sci-Fi, Slice of life")
         self.genre_edit = self._last_line
 
-        # premise (multiline)
         p_lbl = QLabel("Premise")
         p_lbl.setObjectName("field_label")
         outer.addWidget(p_lbl)
@@ -73,14 +75,12 @@ class NewNovelDialog(QDialog):
 
         outer.addSpacing(16)
 
-        # ── error label ───────────────────────────────────────────────────────
         self._err = QLabel("")
         self._err.setStyleSheet("color: #B84040; font-size: 11px;")
         outer.addWidget(self._err)
 
         outer.addSpacing(4)
 
-        # ── buttons ───────────────────────────────────────────────────────────
         btn_row = QHBoxLayout()
         btn_row.setSpacing(10)
         cancel = QPushButton("Cancel")
@@ -98,16 +98,12 @@ class NewNovelDialog(QDialog):
         btn_row.addWidget(self._ok)
         outer.addLayout(btn_row)
 
-        # result fields
-        self.title   = ""
-        self.genre   = ""
+        self.title = ""
+        self.genre = ""
         self.premise = ""
 
-        # Ctrl/Cmd+Enter submits
         sc = QShortcut(QKeySequence("Ctrl+Return"), self)
         sc.activated.connect(self._submit)
-
-    # ── helpers ───────────────────────────────────────────────────────────────
 
     def _add_field(self, layout, label: str, placeholder: str) -> None:
         lbl = QLabel(label)
@@ -122,8 +118,8 @@ class NewNovelDialog(QDialog):
         self._last_line = edit
 
     def _submit(self) -> None:
-        self.title   = self.title_edit.text().strip()
-        self.genre   = self.genre_edit.text().strip()
+        self.title = self.title_edit.text().strip()
+        self.genre = self.genre_edit.text().strip()
         self.premise = self.premise_edit.toPlainText().strip()
 
         if not self.title:

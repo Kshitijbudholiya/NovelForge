@@ -1,37 +1,28 @@
-"""
-storyforge.ui.style
-~~~~~~~~~~~~~~~~~~~
-Complete QSS stylesheet and colour palette for StoryForge.
-One file — import STYLESHEET and apply to QApplication.
-"""
-
-# ── palette (Python tuples for programmatic use) ──────────────────────────────
-C_BG          = "#0C0E14"
-C_PANEL       = "#161928"
-C_PANEL2      = "#1E2234"
-C_PANEL3      = "#262A40"
-C_BORDER      = "#343A56"
-C_BORDER2     = "#424A6A"
-C_AMBER       = "#D4AE4E"
-C_AMBER_DIM   = "#9A7E38"
-C_AMBER_DARK  = "#6B5726"
-C_TEXT        = "#DDD8C0"
+C_BG = "#0C0E14"
+C_PANEL = "#161928"
+C_PANEL2 = "#1E2234"
+C_PANEL3 = "#262A40"
+C_BORDER = "#343A56"
+C_BORDER2 = "#424A6A"
+C_AMBER = "#D4AE4E"
+C_AMBER_DIM = "#9A7E38"
+C_AMBER_DARK = "#6B5726"
+C_TEXT = "#DDD8C0"
 C_TEXT_BRIGHT = "#F0ECD8"
-C_TEXT_DIM    = "#888070"
-C_TEXT_MUTED  = "#5A5648"
+C_TEXT_DIM = "#888070"
+C_TEXT_MUTED = "#5A5648"
 C_BUBBLE_USER = "#26324E"
-C_BUBBLE_AI   = "#181E2E"
-C_SUCCESS     = "#4EA866"
-C_WARNING     = "#C8A040"
-C_ERROR       = "#B84040"
+C_BUBBLE_AI = "#181E2E"
+C_SUCCESS = "#4EA866"
+C_WARNING = "#C8A040"
+C_ERROR = "#B84040"
 C_ACCENT_BLUE = "#3A5080"
-C_SCROLLBAR   = "#2A2E44"
+C_SCROLLBAR = "#2A2E44"
 C_SCROLLBAR_H = "#9A7E38"
 
 STYLESHEET = f"""
-/* ── global ──────────────────────────────────────────────────────────────── */
-QWidget {{
-    background-color: {C_BG};
+* {{
+    background-color: transparent;
     color: {C_TEXT};
     font-family: "Segoe UI", "Inter", "SF Pro Display", Arial, sans-serif;
     font-size: 13px;
@@ -39,13 +30,14 @@ QWidget {{
     selection-color: {C_TEXT_BRIGHT};
     border: none;
     outline: none;
+    box-sizing: border-box;
 }}
 
-QMainWindow {{
+QMainWindow,
+QMainWindow > QWidget {{
     background-color: {C_BG};
 }}
 
-/* ── top bar ─────────────────────────────────────────────────────────────── */
 #topbar {{
     background-color: {C_PANEL};
     border-bottom: 1px solid {C_BORDER};
@@ -55,9 +47,8 @@ QMainWindow {{
 
 #app_logo {{
     color: {C_AMBER};
-    font-size: 22px;
+    font-size: 20px;
     font-weight: bold;
-    padding-left: 14px;
 }}
 
 #app_title {{
@@ -67,18 +58,6 @@ QMainWindow {{
     letter-spacing: 1px;
 }}
 
-#header_subtitle {{
-    color: {C_TEXT_DIM};
-    font-size: 12px;
-    padding-left: 6px;
-}}
-
-#header_chevron {{
-    color: {C_BORDER2};
-    font-size: 13px;
-}}
-
-/* ── buttons ─────────────────────────────────────────────────────────────── */
 QPushButton {{
     background-color: {C_PANEL2};
     color: {C_TEXT};
@@ -91,10 +70,9 @@ QPushButton {{
 QPushButton:hover {{
     background-color: {C_PANEL3};
     border-color: {C_BORDER2};
+    color: {C_TEXT_BRIGHT};
 }}
-QPushButton:pressed {{
-    background-color: {C_BORDER};
-}}
+QPushButton:pressed  {{ background-color: {C_BORDER}; }}
 QPushButton:disabled {{
     color: {C_TEXT_MUTED};
     border-color: {C_BORDER};
@@ -105,21 +83,14 @@ QPushButton:disabled {{
     background-color: {C_AMBER};
     color: {C_BG};
     border: none;
-    border-radius: 5px;
+    border-radius: 6px;
     padding: 7px 18px;
     font-size: 13px;
     font-weight: 700;
 }}
-#btn_primary:hover {{
-    background-color: {C_AMBER_DIM};
-}}
-#btn_primary:pressed {{
-    background-color: {C_AMBER_DARK};
-}}
-#btn_primary:disabled {{
-    background-color: {C_AMBER_DARK};
-    color: {C_TEXT_MUTED};
-}}
+#btn_primary:hover    {{ background-color: {C_AMBER_DIM}; color: {C_BG}; }}
+#btn_primary:pressed  {{ background-color: {C_AMBER_DARK}; color: {C_BG}; }}
+#btn_primary:disabled {{ background-color: {C_AMBER_DARK}; color: {C_TEXT_MUTED}; }}
 
 #btn_ghost {{
     background-color: transparent;
@@ -144,14 +115,10 @@ QPushButton:disabled {{
     font-weight: 700;
     min-width: 80px;
 }}
-#btn_send:hover  {{ background-color: {C_AMBER_DIM}; }}
-#btn_send:pressed {{ background-color: {C_AMBER_DARK}; }}
-#btn_send:disabled {{
-    background-color: {C_PANEL3};
-    color: {C_TEXT_MUTED};
-}}
+#btn_send:hover    {{ background-color: {C_AMBER_DIM};  color: {C_BG}; }}
+#btn_send:pressed  {{ background-color: {C_AMBER_DARK}; color: {C_BG}; }}
+#btn_send:disabled {{ background-color: {C_PANEL3}; color: {C_TEXT_MUTED}; }}
 
-/* ── toggle switch area ──────────────────────────────────────────────────── */
 #toggle_container {{
     background-color: {C_PANEL2};
     border: 1px solid {C_BORDER};
@@ -159,13 +126,9 @@ QPushButton:disabled {{
     padding: 2px 8px;
 }}
 
-#toggle_label {{
-    font-size: 12px;
-    font-weight: 600;
-    padding: 2px 4px;
-}}
+#toggle_label_on  {{ color: {C_SUCCESS}; font-size: 12px; font-weight: 600; }}
+#toggle_label_off {{ color: {C_ERROR};   font-size: 12px; font-weight: 600; }}
 
-/* ── sidebar ─────────────────────────────────────────────────────────────── */
 #sidebar {{
     background-color: {C_PANEL};
     border-right: 1px solid {C_BORDER};
@@ -174,6 +137,7 @@ QPushButton:disabled {{
 }}
 
 #sidebar_header {{
+    background-color: {C_PANEL};
     color: {C_AMBER};
     font-size: 11px;
     font-weight: 700;
@@ -187,15 +151,11 @@ QPushButton:disabled {{
     margin: 0px 12px;
 }}
 
-/* novel tree items */
-#novel_item {{
-    background-color: transparent;
-    border-radius: 6px;
-    padding: 2px;
-    margin: 1px 8px;
-}}
-#novel_item:hover {{
-    background-color: {C_PANEL2};
+QScrollArea#sidebar_scroll,
+QScrollArea#sidebar_scroll > QWidget,
+QScrollArea#sidebar_scroll > QWidget > QWidget {{
+    background-color: {C_PANEL};
+    border: none;
 }}
 
 #novel_title_btn {{
@@ -208,19 +168,22 @@ QPushButton:disabled {{
     font-weight: 600;
     text-align: left;
 }}
-#novel_title_btn:hover {{
-    background-color: {C_PANEL2};
-    color: {C_TEXT_BRIGHT};
-}}
-#novel_title_btn[active="true"] {{
-    color: {C_AMBER};
-    background-color: {C_PANEL3};
-}}
+#novel_title_btn:hover                {{ background-color: {C_PANEL2}; color: {C_TEXT_BRIGHT}; }}
+#novel_title_btn[active="true"]       {{ color: {C_AMBER}; background-color: {C_PANEL3}; }}
+#novel_title_btn[active="true"]:hover {{ color: {C_AMBER}; background-color: {C_PANEL3}; }}
 
 #novel_genre_label {{
     color: {C_TEXT_MUTED};
     font-size: 11px;
     padding: 0px 12px 4px 34px;
+}}
+
+#chapters_header {{
+    color: {C_TEXT_MUTED};
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    padding: 6px 10px 2px 34px;
 }}
 
 #chapter_btn {{
@@ -232,50 +195,37 @@ QPushButton:disabled {{
     font-size: 12px;
     text-align: left;
 }}
-#chapter_btn:hover {{
-    background-color: {C_PANEL2};
-    color: {C_TEXT};
-}}
-#chapter_btn[active="true"] {{
-    color: {C_AMBER};
-    background-color: {C_PANEL3};
-    font-weight: 600;
+#chapter_btn:hover                {{ background-color: {C_PANEL2}; color: {C_TEXT}; }}
+#chapter_btn[active="true"]       {{ color: {C_AMBER}; background-color: {C_PANEL3}; font-weight: 600; }}
+#chapter_btn[active="true"]:hover {{ color: {C_AMBER}; background-color: {C_PANEL3}; }}
+
+#chat_header {{
+    background-color: {C_PANEL};
+    border-bottom: 1px solid {C_BORDER};
 }}
 
-#chapters_header {{
-    color: {C_TEXT_MUTED};
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    padding: 6px 10px 2px 34px;
-}}
+#hdr_novel  {{ color: {C_AMBER};    font-size: 14px; font-weight: 700; }}
+#hdr_chevron{{ color: {C_BORDER2};  font-size: 15px; }}
+#hdr_chapter{{ color: {C_TEXT_DIM}; font-size: 13px; }}
+#hdr_status {{ color: {C_TEXT_MUTED}; font-size: 11px; }}
+#hdr_icon   {{ color: {C_AMBER};    font-size: 14px; }}
 
-/* ── chat area ───────────────────────────────────────────────────────────── */
-#chat_area {{
-    background-color: {C_BG};
-}}
-
-#chat_scroll {{
+QScrollArea#chat_scroll,
+QScrollArea#chat_scroll > QWidget,
+QScrollArea#chat_scroll > QWidget > QWidget {{
     background-color: {C_BG};
     border: none;
 }}
 
-QScrollArea {{
-    background-color: {C_BG};
-    border: none;
-}}
-
-QScrollArea > QWidget > QWidget {{
+#chat_messages_container {{
     background-color: {C_BG};
 }}
 
-/* ── message bubbles ─────────────────────────────────────────────────────── */
 #bubble_user {{
     background-color: {C_BUBBLE_USER};
     border-radius: 12px;
     border-bottom-right-radius: 3px;
     border: 1px solid #2E3E5E;
-    padding: 2px;
 }}
 
 #bubble_ai {{
@@ -283,79 +233,45 @@ QScrollArea > QWidget > QWidget {{
     border-radius: 12px;
     border-bottom-left-radius: 3px;
     border: 1px solid #1E2438;
-    padding: 2px;
 }}
 
 #msg_text_user {{
     color: {C_TEXT_BRIGHT};
-    background-color: transparent;
     font-size: 13px;
-    line-height: 1.5;
     padding: 10px 14px;
 }}
 
 #msg_text_ai {{
     color: {C_TEXT};
-    background-color: transparent;
     font-size: 13px;
-    line-height: 1.5;
     padding: 10px 14px;
 }}
 
-#msg_label_user {{
-    color: {C_AMBER};
-    font-size: 11px;
-    font-weight: 600;
-}}
+#msg_label_user {{ color: {C_AMBER};      font-size: 11px; font-weight: 600; }}
+#msg_label_ai   {{ color: {C_TEXT_MUTED}; font-size: 11px; }}
+#msg_time       {{ color: {C_TEXT_MUTED}; font-size: 10px; }}
 
-#msg_label_ai {{
-    color: {C_TEXT_MUTED};
-    font-size: 11px;
-}}
+#empty_icon     {{ color: {C_AMBER};    font-size: 36px; }}
+#empty_title    {{ color: {C_AMBER};    font-size: 22px; font-weight: 700; }}
+#empty_subtitle {{ color: {C_TEXT_DIM}; font-size: 13px; }}
 
-#msg_time {{
-    color: {C_TEXT_MUTED};
-    font-size: 10px;
-}}
-
-/* welcome / empty state */
-#empty_title {{
-    color: {C_AMBER};
-    font-size: 22px;
-    font-weight: 700;
-}}
-#empty_subtitle {{
-    color: {C_TEXT_DIM};
-    font-size: 13px;
-}}
-
-/* ── input area ──────────────────────────────────────────────────────────── */
 #input_area {{
     background-color: {C_PANEL};
     border-top: 1px solid {C_BORDER};
     padding: 10px 12px;
 }}
 
-#chat_input {{
+QTextEdit#chat_input {{
     background-color: {C_PANEL2};
     color: {C_TEXT_BRIGHT};
     border: 1px solid {C_BORDER};
     border-radius: 8px;
     padding: 10px 14px;
     font-size: 13px;
-    selection-background-color: {C_AMBER_DARK};
 }}
-#chat_input:focus {{
-    border-color: {C_AMBER_DIM};
-    background-color: {C_PANEL3};
-}}
-#chat_input:disabled {{
-    color: {C_TEXT_MUTED};
-    border-color: {C_BORDER};
-    background-color: {C_PANEL};
-}}
+QTextEdit#chat_input:focus    {{ border-color: {C_AMBER_DIM}; background-color: {C_PANEL3}; }}
+QTextEdit#chat_input:disabled {{ color: {C_TEXT_MUTED}; background-color: {C_PANEL}; border-color: {C_BORDER}; }}
 
-/* ── status bar ──────────────────────────────────────────────────────────── */
 #statusbar {{
     background-color: {C_PANEL};
     border-top: 1px solid {C_BORDER};
@@ -363,32 +279,16 @@ QScrollArea > QWidget > QWidget {{
     max-height: 26px;
     padding: 0px 12px;
 }}
+#status_text {{ color: {C_TEXT_MUTED}; font-size: 11px; }}
 
-#status_text {{
-    color: {C_TEXT_MUTED};
-    font-size: 11px;
-}}
-
-#status_busy {{
-    color: {C_AMBER};
-    font-size: 11px;
-    font-weight: 600;
-}}
-
-/* ── progress bar ────────────────────────────────────────────────────────── */
 QProgressBar {{
     background-color: {C_PANEL2};
     border: none;
     border-radius: 3px;
-    max-height: 4px;
-    text-align: center;
+    max-height: 3px;
 }}
-QProgressBar::chunk {{
-    background-color: {C_AMBER};
-    border-radius: 3px;
-}}
+QProgressBar::chunk {{ background-color: {C_AMBER}; border-radius: 3px; }}
 
-/* ── scrollbars ──────────────────────────────────────────────────────────── */
 QScrollBar:vertical {{
     background-color: transparent;
     width: 8px;
@@ -399,56 +299,16 @@ QScrollBar::handle:vertical {{
     border-radius: 4px;
     min-height: 30px;
 }}
-QScrollBar::handle:vertical:hover {{
-    background-color: {C_SCROLLBAR_H};
-}}
-QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {{
-    height: 0;
-    background: none;
-}}
-QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {{
-    background: none;
-}}
-QScrollBar:horizontal {{
-    height: 6px;
-    background: transparent;
-}}
-QScrollBar::handle:horizontal {{
-    background-color: {C_SCROLLBAR};
-    border-radius: 3px;
-}}
-QScrollBar::handle:horizontal:hover {{
-    background-color: {C_SCROLLBAR_H};
-}}
-QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {{
-    width: 0; background: none;
-}}
-
-/* ── dialogs / modals ────────────────────────────────────────────────────── */
-QDialog {{
-    background-color: {C_PANEL};
-    border: 1px solid {C_BORDER2};
-    border-radius: 10px;
-}}
-
-#dialog_title {{
-    color: {C_AMBER};
-    font-size: 16px;
-    font-weight: 700;
-    padding-bottom: 4px;
-}}
-
-#dialog_subtitle {{
-    color: {C_TEXT_DIM};
-    font-size: 12px;
-}}
-
-#field_label {{
-    color: {C_AMBER};
-    font-size: 12px;
-    font-weight: 600;
-    margin-bottom: 2px;
-}}
+QScrollBar::handle:vertical:hover    {{ background-color: {C_SCROLLBAR_H}; }}
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical        {{ height: 0; background: none; }}
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical        {{ background: none; }}
+QScrollBar:horizontal                {{ height: 6px; background: transparent; }}
+QScrollBar::handle:horizontal        {{ background-color: {C_SCROLLBAR}; border-radius: 3px; }}
+QScrollBar::handle:horizontal:hover  {{ background-color: {C_SCROLLBAR_H}; }}
+QScrollBar::add-line:horizontal,
+QScrollBar::sub-line:horizontal      {{ width: 0; background: none; }}
 
 QLineEdit {{
     background-color: {C_PANEL2};
@@ -458,13 +318,8 @@ QLineEdit {{
     padding: 8px 12px;
     font-size: 13px;
 }}
-QLineEdit:focus {{
-    border-color: {C_AMBER_DIM};
-    background-color: {C_PANEL3};
-}}
-QLineEdit::placeholder {{
-    color: {C_TEXT_MUTED};
-}}
+QLineEdit:focus    {{ border-color: {C_AMBER_DIM}; background-color: {C_PANEL3}; }}
+QLineEdit:disabled {{ color: {C_TEXT_MUTED}; }}
 
 QTextEdit {{
     background-color: {C_PANEL2};
@@ -475,41 +330,28 @@ QTextEdit {{
     font-size: 13px;
     selection-background-color: {C_AMBER_DARK};
 }}
-QTextEdit:focus {{
-    border-color: {C_AMBER_DIM};
-}}
+QTextEdit:focus {{ border-color: {C_AMBER_DIM}; }}
 
-/* ── loader overlay ──────────────────────────────────────────────────────── */
-#loader_overlay {{
-    background-color: rgba(12, 14, 20, 200);
+QDialog {{
+    background-color: {C_PANEL};
+    border: 1px solid {C_BORDER2};
     border-radius: 10px;
 }}
-#loader_card {{
+
+#loader_card,
+#dialog_card {{
     background-color: {C_PANEL2};
     border: 1px solid {C_BORDER2};
     border-radius: 12px;
-    padding: 24px 32px;
-}}
-#loader_title {{
-    color: {C_AMBER};
-    font-size: 15px;
-    font-weight: 700;
-}}
-#loader_subtitle {{
-    color: {C_TEXT_DIM};
-    font-size: 12px;
 }}
 
-/* ── splitter ────────────────────────────────────────────────────────────── */
-QSplitter::handle {{
-    background-color: {C_BORDER};
-    width: 1px;
-}}
-QSplitter::handle:hover {{
-    background-color: {C_AMBER_DIM};
-}}
+#dialog_title  {{ color: {C_AMBER};    font-size: 16px; font-weight: 700; }}
+#field_label   {{ color: {C_AMBER};    font-size: 12px; font-weight: 600; }}
+#dialog_error  {{ color: {C_ERROR};    font-size: 11px; }}
 
-/* ── tooltips ────────────────────────────────────────────────────────────── */
+#loader_title    {{ color: {C_AMBER};    font-size: 15px; font-weight: 700; }}
+#loader_subtitle {{ color: {C_TEXT_DIM}; font-size: 12px; }}
+
 QToolTip {{
     background-color: {C_PANEL2};
     color: {C_TEXT};

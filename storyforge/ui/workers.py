@@ -4,6 +4,7 @@ storyforge.ui.workers
 QThread worker classes for all blocking AI operations.
 Each emits typed signals so the UI can react without polling.
 """
+
 from __future__ import annotations
 
 from PyQt6.QtCore import QThread, pyqtSignal
@@ -12,22 +13,24 @@ from PyQt6.QtCore import QThread, pyqtSignal
 class CreateNovelWorker(QThread):
     """Generate the first chapter of a brand-new novel."""
 
-    progress   = pyqtSignal(str)          # status message
-    finished   = pyqtSignal(dict)         # {novel_id, chapter, summary, chars, lore}
-    error      = pyqtSignal(str)
+    progress = pyqtSignal(str)
+    finished = pyqtSignal(dict)
+    error = pyqtSignal(str)
 
     def __init__(self, manager, title: str, genre: str, premise: str) -> None:
         super().__init__()
         self.manager = manager
-        self.title   = title
-        self.genre   = genre
+        self.title = title
+        self.genre = genre
         self.premise = premise
 
     def run(self) -> None:
         try:
             from storyforge.core.generators import (
-                create_first_chapter, compress_memory,
-                extract_characters, extract_lore,
+                create_first_chapter,
+                compress_memory,
+                extract_characters,
+                extract_lore,
             )
             from storyforge.core.rag import save_first_chapter
 
@@ -56,13 +59,15 @@ class CreateNovelWorker(QThread):
             if lore:
                 self.manager.apply_lore_extraction(lore)
 
-            self.finished.emit({
-                "novel_id": nid,
-                "chapter":  chapter,
-                "summary":  summary,
-                "chars":    chars,
-                "lore":     lore,
-            })
+            self.finished.emit(
+                {
+                    "novel_id": nid,
+                    "chapter": chapter,
+                    "summary": summary,
+                    "chars": chars,
+                    "lore": lore,
+                }
+            )
 
         except Exception as exc:
             self.error.emit(str(exc))
@@ -71,34 +76,35 @@ class CreateNovelWorker(QThread):
 class SendMessageWorker(QThread):
     """Handle a chat message — either Q&A or chapter generation."""
 
-    progress   = pyqtSignal(str)
-    answer     = pyqtSignal(str)                  # Q&A response
-    chapter    = pyqtSignal(dict)                 # full chapter package
-    error      = pyqtSignal(str)
+    progress = pyqtSignal(str)
+    answer = pyqtSignal(str)
+    chapter = pyqtSignal(dict)
+    error = pyqtSignal(str)
 
     def __init__(
         self,
         manager,
         novel_id: str,
         text: str,
-        scope: str,       # "novel" | "chapter"
+        scope: str,
         chapter_number: int | None,
     ) -> None:
         super().__init__()
-        self.manager        = manager
-        self.novel_id       = novel_id
-        self.text           = text
-        self.scope          = scope
+        self.manager = manager
+        self.novel_id = novel_id
+        self.text = text
+        self.scope = scope
         self.chapter_number = chapter_number
 
     def run(self) -> None:
         try:
             from storyforge.core.generators import classify_intent
             from storyforge.core.rag import (
-                generate_next_chapter, ask_story_question,
+                generate_next_chapter,
+                ask_story_question,
             )
 
-            bible  = self.manager.get_story_bible()
+            bible = self.manager.get_story_bible()
             intent = classify_intent(self.text)
 
             if intent == "QUESTION" or self.scope == "novel":
@@ -111,9 +117,7 @@ class SendMessageWorker(QThread):
                 ch_num = self.manager.update_chapter()
 
                 self.progress.emit(f"Writing Chapter {ch_num}…")
-                pkg = generate_next_chapter(
-                    self.novel_id, self.text, ch_num, bible
-                )
+                pkg = generate_next_chapter(self.novel_id, self.text, ch_num, bible)
 
                 self.progress.emit("Saving chapter to disk…")
                 self.manager.save_chapter_to_disk(

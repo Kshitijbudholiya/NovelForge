@@ -1,53 +1,53 @@
-"""
-storyforge.ui.widgets
-~~~~~~~~~~~~~~~~~~~~~
-Reusable custom PyQt6 widgets: ToggleSwitch, LoaderOverlay,
-MessageBubble, EmptyState, SpinnerLabel.
-"""
 from __future__ import annotations
-import math
 
-from PyQt6.QtCore  import (Qt, QTimer, QPropertyAnimation, QEasingCurve,
-                            QRect, pyqtProperty, QSize)
-from PyQt6.QtGui   import (QPainter, QColor, QPen, QFont, QFontMetrics,
-                            QBrush, QPainterPath)
-from PyQt6.QtWidgets import (QWidget, QLabel, QVBoxLayout, QHBoxLayout,
-                              QFrame, QSizePolicy, QScrollArea)
+from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtGui import QPainter, QColor, QPen, QBrush
+from PyQt6.QtWidgets import (
+    QWidget,
+    QLabel,
+    QVBoxLayout,
+    QHBoxLayout,
+    QFrame,
+    QSizePolicy,
+)
 
 from storyforge.ui.style import (
-    C_AMBER, C_AMBER_DIM, C_BG, C_PANEL, C_PANEL2, C_PANEL3,
-    C_BORDER, C_TEXT, C_TEXT_DIM, C_TEXT_MUTED, C_TEXT_BRIGHT,
-    C_BUBBLE_USER, C_BUBBLE_AI, C_SUCCESS, C_WARNING,
+    C_AMBER,
+    C_PANEL3,
+    C_TEXT_DIM,
+    C_TEXT_MUTED,
+    C_BUBBLE_USER,
+    C_BUBBLE_AI,
+    C_TEXT_BRIGHT,
+    C_TEXT,
+    C_BG,
 )
 
 
-# ── Toggle Switch ─────────────────────────────────────────────────────────────
-
 class ToggleSwitch(QWidget):
-    """Animated pill toggle — emits toggled(bool)."""
 
     toggled = __import__("PyQt6.QtCore", fromlist=["pyqtSignal"]).pyqtSignal(bool)
 
-    _TRACK_W = 44
-    _TRACK_H = 24
-    _KNOB_D  = 18
-    _PAD     = 3
+    _W, _H, _D, _P = 44, 24, 18, 3
 
     def __init__(self, checked: bool = True, parent=None) -> None:
         super().__init__(parent)
         self._checked = checked
-        self._anim_x  = float(self._knob_x_on() if checked else self._knob_x_off())
-        self.setFixedSize(self._TRACK_W, self._TRACK_H)
+        self._anim_x = float(self._x_on() if checked else self._x_off())
+        self.setFixedSize(self._W, self._H)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
-
         self._timer = QTimer(self)
         self._timer.setInterval(12)
         self._timer.timeout.connect(self._step)
 
-    def _knob_x_on(self)  -> int: return self._TRACK_W - self._KNOB_D - self._PAD
-    def _knob_x_off(self) -> int: return self._PAD
+    def _x_on(self) -> int:
+        return self._W - self._D - self._P
 
-    def isChecked(self) -> bool: return self._checked
+    def _x_off(self) -> int:
+        return self._P
+
+    def isChecked(self) -> bool:
+        return self._checked
 
     def setChecked(self, val: bool) -> None:
         if val == self._checked:
@@ -60,8 +60,8 @@ class ToggleSwitch(QWidget):
         self.setChecked(not self._checked)
 
     def _step(self) -> None:
-        target = float(self._knob_x_on() if self._checked else self._knob_x_off())
-        diff   = target - self._anim_x
+        target = float(self._x_on() if self._checked else self._x_off())
+        diff = target - self._anim_x
         if abs(diff) < 0.8:
             self._anim_x = target
             self._timer.stop()
@@ -72,38 +72,30 @@ class ToggleSwitch(QWidget):
     def paintEvent(self, e) -> None:
         p = QPainter(self)
         p.setRenderHint(QPainter.RenderHint.Antialiasing)
-
-        # track
-        track_col = QColor(C_AMBER if self._checked else C_PANEL3)
-        p.setBrush(QBrush(track_col))
         p.setPen(Qt.PenStyle.NoPen)
-        p.drawRoundedRect(0, 0, self._TRACK_W, self._TRACK_H,
-                          self._TRACK_H / 2, self._TRACK_H / 2)
-
-        # knob
+        p.setBrush(QBrush(QColor(C_AMBER if self._checked else C_PANEL3)))
+        p.drawRoundedRect(0, 0, self._W, self._H, self._H / 2, self._H / 2)
         p.setBrush(QBrush(QColor("#FFFFFF" if self._checked else C_TEXT_DIM)))
-        kx = int(self._anim_x)
-        ky = self._PAD
-        p.drawEllipse(kx, ky, self._KNOB_D, self._KNOB_D)
+        p.drawEllipse(int(self._anim_x), self._P, self._D, self._D)
         p.end()
 
 
-# ── Spinner ───────────────────────────────────────────────────────────────────
-
 class SpinnerWidget(QWidget):
-    """Animated arc spinner."""
 
     def __init__(self, size: int = 32, parent=None) -> None:
         super().__init__(parent)
-        self._size  = size
+        self._size = size
         self._angle = 0
         self.setFixedSize(size, size)
         self._timer = QTimer(self)
         self._timer.setInterval(30)
         self._timer.timeout.connect(self._tick)
 
-    def start(self) -> None: self._timer.start()
-    def stop(self)  -> None: self._timer.stop()
+    def start(self) -> None:
+        self._timer.start()
+
+    def stop(self) -> None:
+        self._timer.stop()
 
     def _tick(self) -> None:
         self._angle = (self._angle + 12) % 360
@@ -116,24 +108,20 @@ class SpinnerWidget(QWidget):
         pen.setCapStyle(Qt.PenCapStyle.RoundCap)
         p.setPen(pen)
         m = 4
-        p.drawArc(m, m, self._size - 2*m, self._size - 2*m,
-                  (-self._angle) * 16, 270 * 16)
+        p.drawArc(
+            m, m, self._size - 2 * m, self._size - 2 * m, (-self._angle) * 16, 270 * 16
+        )
         p.end()
 
 
-# ── Loader Overlay ────────────────────────────────────────────────────────────
-
 class LoaderOverlay(QWidget):
-    """Full-window semi-transparent overlay with spinner + progress text."""
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
-        self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, False)
         self.setObjectName("loader_overlay")
         self.hide()
 
-        # centre card
         card = QFrame(self)
         card.setObjectName("loader_card")
         card.setFixedWidth(320)
@@ -142,7 +130,6 @@ class LoaderOverlay(QWidget):
         vbox.setSpacing(10)
         vbox.setContentsMargins(28, 24, 28, 24)
 
-        # spinner row
         row = QHBoxLayout()
         self._spinner = SpinnerWidget(36)
         row.addWidget(self._spinner, 0, Qt.AlignmentFlag.AlignVCenter)
@@ -151,20 +138,19 @@ class LoaderOverlay(QWidget):
         text_col = QVBoxLayout()
         self._title = QLabel("Generating…")
         self._title.setObjectName("loader_title")
-        self._sub   = QLabel("This may take a minute")
+        self._sub = QLabel("This may take a minute")
         self._sub.setObjectName("loader_subtitle")
         text_col.addWidget(self._title)
         text_col.addWidget(self._sub)
         row.addLayout(text_col)
         vbox.addLayout(row)
 
-        # dot progress row
         dot_row = QHBoxLayout()
         dot_row.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._dots: list[QLabel] = []
         for _ in range(3):
             d = QLabel("●")
-            d.setStyleSheet(f"color: {C_TEXT_MUTED}; font-size: 8px;")
+            d.setObjectName("loader_dot_off")
             dot_row.addWidget(d)
             dot_row.addSpacing(6)
             self._dots.append(d)
@@ -172,14 +158,13 @@ class LoaderOverlay(QWidget):
 
         self._card = card
         self._dot_idx = 0
-
         self._dot_timer = QTimer(self)
         self._dot_timer.setInterval(400)
         self._dot_timer.timeout.connect(self._pulse_dot)
 
     def resizeEvent(self, e) -> None:
         self._card.move(
-            (self.width()  - self._card.width())  // 2,
+            (self.width() - self._card.width()) // 2,
             (self.height() - self._card.height()) // 2,
         )
 
@@ -206,22 +191,19 @@ class LoaderOverlay(QWidget):
 
     def _pulse_dot(self) -> None:
         for i, d in enumerate(self._dots):
-            d.setStyleSheet(
-                f"color: {C_AMBER if i == self._dot_idx else C_TEXT_MUTED}; font-size: 8px;"
-            )
+            if i == self._dot_idx:
+                d.setObjectName("loader_dot_on")
+                d.setStyleSheet(f"color: {C_AMBER}; font-size: 8px;")
+            else:
+                d.setObjectName("loader_dot_off")
+                d.setStyleSheet(f"color: {C_TEXT_MUTED}; font-size: 8px;")
         self._dot_idx = (self._dot_idx + 1) % len(self._dots)
 
 
-# ── Message Bubble ────────────────────────────────────────────────────────────
-
 class MessageBubble(QWidget):
-    """A single chat message — user or AI."""
-
-    MAX_BUBBLE_RATIO = 0.72   # bubble never wider than 72% of chat area
 
     def __init__(self, role: str, text: str, timestamp: str, parent=None) -> None:
         super().__init__(parent)
-        self._role = role
         is_user = role == "user"
 
         outer = QHBoxLayout(self)
@@ -231,13 +213,15 @@ class MessageBubble(QWidget):
         col = QVBoxLayout()
         col.setSpacing(3)
 
-        # ── label row ─────────────────────────────────────────────────────────
         label_row = QHBoxLayout()
         label_row.setSpacing(6)
+
         name = QLabel("You" if is_user else "StoryForge")
         name.setObjectName("msg_label_user" if is_user else "msg_label_ai")
+
         ts_label = QLabel(timestamp)
         ts_label.setObjectName("msg_time")
+
         if is_user:
             label_row.addStretch()
             label_row.addWidget(ts_label)
@@ -248,7 +232,6 @@ class MessageBubble(QWidget):
             label_row.addStretch()
         col.addLayout(label_row)
 
-        # ── bubble ────────────────────────────────────────────────────────────
         bubble_row = QHBoxLayout()
         bubble_row.setSpacing(0)
 
@@ -262,8 +245,8 @@ class MessageBubble(QWidget):
         body.setObjectName("msg_text_user" if is_user else "msg_text_ai")
         body.setWordWrap(True)
         body.setTextInteractionFlags(
-            Qt.TextInteractionFlag.TextSelectableByMouse |
-            Qt.TextInteractionFlag.TextSelectableByKeyboard
+            Qt.TextInteractionFlag.TextSelectableByMouse
+            | Qt.TextInteractionFlag.TextSelectableByKeyboard
         )
         bubble_layout.addWidget(body)
 
@@ -284,10 +267,7 @@ class MessageBubble(QWidget):
             outer.addStretch()
 
 
-# ── Empty / Welcome State ─────────────────────────────────────────────────────
-
 class EmptyState(QWidget):
-    """Shown in chat area when there are no messages."""
 
     def __init__(self, has_novel: bool = False, parent=None) -> None:
         super().__init__(parent)
@@ -296,27 +276,25 @@ class EmptyState(QWidget):
         vbox.setSpacing(10)
 
         icon = QLabel("✦")
-        icon.setStyleSheet(f"color: {C_AMBER}; font-size: 36px;")
+        icon.setObjectName("empty_icon")
         icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
         vbox.addWidget(icon)
-
         vbox.addSpacing(6)
 
         if has_novel:
             title = QLabel("No messages yet")
-            title.setObjectName("empty_title")
-            sub   = QLabel(
+            sub = QLabel(
                 "Type an instruction below to continue the story,\n"
                 "or ask a question about it."
             )
         else:
             title = QLabel("Welcome to StoryForge")
-            title.setObjectName("empty_title")
-            sub   = QLabel(
+            sub = QLabel(
                 "Create a new novel with the button above,\n"
                 "or select one from the sidebar."
             )
 
+        title.setObjectName("empty_title")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         sub.setObjectName("empty_subtitle")
         sub.setAlignment(Qt.AlignmentFlag.AlignCenter)
