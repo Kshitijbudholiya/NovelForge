@@ -7,7 +7,7 @@
 Built on three local services: **Ollama** for LLM inference, **Endee** for vector memory, and **PyQt6** for the desktop UI.
 
 ---
-![Project Logo](<images/Screen.png>)
+![Project Logo](https://github.com/Kshitijbudholiya/NovelForge/blob/main/images/Screen.png)
 
 ## What Makes This Different
 
