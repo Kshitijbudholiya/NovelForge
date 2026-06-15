@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "novelforge"
-version = "1.0.1"
+version = "1.0.2"
 description = "AI-powered novel writer with vector memory, RAG, and a PyQt6 desktop UI"
 readme = "README.md"
 license = { text = "MIT" }
